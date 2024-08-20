@@ -20,12 +20,21 @@
 ### Vagrant ###
 # General
 .vagrant/
-
+vagrant_sync_folder/
 # Log files (if you are creating logs in debug mode, uncomment this)
 # *.log
 
 ### Vagrant Patch ###
 *.box
+
+# Ignore Vagrant log files and directories
+*.log
+*.vbox
+*.vbox-prev
+*.vbox-extpack
+**/ubuntu-*-cloudimg-console.log
+
+
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
