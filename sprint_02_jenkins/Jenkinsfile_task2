@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_PORT=9090
+        BUILD_WORKSPACE=""
+        JOB_NAME = "${env.JOB_NAME}"
+    }
+
+    stages {
+        
+        stage('Build') {
+            steps {
+                sh 'mvn -B package -DskipTests'
+                script {
+                    BUILD_WORKSPACE = "${env.WORKSPACE}"
+                }
+            }
+        }
+
+        stage('Integration Test') {
+            parallel {
+                stage('Running Application') {
+                    agent any
+                    options {
+                        timeout(time: 60, unit: "SECONDS")
+                    }
+                    steps {
+                        script {
+                            try {
+                                dir(BUILD_WORKSPACE){
+                                    sh 'java -jar target/contact.war'
+                                }
+                            } catch (Throwable e) {
+                                echo "Caught ${e.toString()}"
+                                currentBuild.result = "SUCCESS" 
+                            }
+                        }
+                    }
+                }
+                stage('Running Test') {
+                    steps {
+                        sleep 30 // sec
+                        sh 'mvn test -Dtest=RestIT'
+                    }
+                }
+            }
+        }        
+        
+    }
+}
+

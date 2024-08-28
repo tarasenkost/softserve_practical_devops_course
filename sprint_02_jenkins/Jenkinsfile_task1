@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    environment {
+        APP_PORT=9090
+    }
+    stages {
+        stage('Build Stage') {
+            steps {
+                sh 'mvn -B package -DskipTests'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh 'mvn -B test'
+            }
+        }
+    post {
+        always {
+            sh 'echo "Pipeline was successful. GJ! Cleaning up..."'
+            cleanWs()
+        }
+    }
+}
