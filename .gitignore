@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,vim,python,visualstudiocode,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,vim,python,visualstudiocode,java
 
+learning_materials/
+
 ### Linux ###
 *~
 
