@@ -1,0 +1,39 @@
+services:
+
+  nodejs-server:
+    container_name: nodejs-server
+    build:
+      context: ./api
+      dockerfile: Dockerfile-dev
+    ports:
+      - "3080:3080"
+      - "9229:9229" # Node.js debug port
+    volumes:
+      - ./api:/usr/src/app/api  
+      - api_node_modules:/usr/src/app/api/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
+  angular-ui:
+    container_name: angular-ui
+    build:
+      context: ./ui
+      dockerfile: Dockerfile-dev
+    ports:
+      - "4201:4201"
+    volumes:
+      - ./ui:/usr/src/app/app-ui
+      - ui_node_modules:/usr/src/app/app-ui/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on: 
+      - nodejs-server
+    restart: unless-stopped
+
+volumes:
+  api_node_modules:
+  ui_node_modules:
+
+
+
