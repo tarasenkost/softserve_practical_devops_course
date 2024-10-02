@@ -1,0 +1,18 @@
+---
+postgresql_version: "14"
+
+postgresql_config_dir: "/etc/postgresql/{{ postgresql_version }}/main/"
+postgresql_daemon: postgresql
+
+postgresql_system_user: postgres
+postgresql_system_group: postgres
+
+postgresql_auth_method: "scram-sha-256"
+
+postgresql_packages: 
+  - "postgresql-{{ postgresql_version }}"
+  - postgresql-contrib
+  - libpq-dev
+  - acl
+
+postgresql_python_library: python3-psycopg2

@@ -1,0 +1,4 @@
+    db_name: laravel
+    db_user: dog
+    db_pass: pwd
+    db_host: "3.93.152.194"

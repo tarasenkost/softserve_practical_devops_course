@@ -1,0 +1,20 @@
+---
+postgresql_options:
+  - { name: listen_addresses,  value: "*" }
+  - { name: logging_collector, value: "off"}
+
+postgresql_databases: 
+  - "{{ db_name }}"
+
+postgresql_users:
+  - { name: "{{ db_user }}", password: "{{ db_pass }}", db: "{{ db_name }}" }
+
+postgresql_schemas:
+  - { db: "{{ db_name }}", name: "{{ db_user }}", owner: "{{ db_user }}" }
+
+postgresql_privs:
+  - { db: "{{ db_name }}", roles: "{{ db_user }}", privs: ALL, type: database }
+
+postgresql_hba_entries:
+  - { contype: local, databases: all, users: all,                        method: peer          }
+  - { contype: host, databases: "{{ db_name }}", users: "{{ db_user }}", address: "0.0.0.0/0", method: "{{ postgresql_auth_method }}" }

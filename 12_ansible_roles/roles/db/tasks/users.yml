@@ -1,0 +1,10 @@
+- name: Ensure users are present.
+  community.postgresql.postgresql_user:
+    name: "{{ user.name }}"
+    password: "{{ user.password | default(omit) }}"
+    db: "{{ user.db }}"
+  loop: "{{ postgresql_users }}"
+  loop_control:
+    loop_var: user
+  become: true
+  become_user: "{{ postgresql_system_user }}"

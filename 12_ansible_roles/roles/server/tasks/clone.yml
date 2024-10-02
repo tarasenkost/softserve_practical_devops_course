@@ -1,0 +1,14 @@
+- name: Clone the GitHub repository
+  ansible.builtin.git:
+    repo: "{{ app_repo }}"
+    dest: ./devops_pract
+    clone: yes
+    update: yes
+  become: false
+
+- name: Copy project to server
+  ansible.builtin.copy:
+    src: ./devops_pract/
+    dest: "{{ app_path }}"
+    remote_src: true
+  become: true

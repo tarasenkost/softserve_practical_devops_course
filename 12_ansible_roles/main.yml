@@ -1,0 +1,12 @@
+---
+- name: Set-up database
+  hosts: db
+  roles:
+    - db
+
+- name: Set-up app
+  hosts: server
+  roles:
+    - server
+
+

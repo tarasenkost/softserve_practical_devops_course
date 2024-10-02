@@ -1,0 +1,37 @@
+- name: Install dependencies from composer.json
+  community.general.composer:
+    command: install
+    working_dir: "{{ app_path }}"
+  environment:
+    COMPOSER_ALLOW_SUPERUSER: 1
+  become: true
+
+- name: Write application configuration file
+  ansible.builtin.template:
+    src: app.conf.j2
+    dest: "{{ app_path }}/.env"
+  become: true
+
+- name: Generate artisan key
+  ansible.builtin.command: php artisan key:generate
+  args:
+    chdir: "{{ app_path }}"
+  become: true
+
+- name: Install packages based on package.json
+  community.general.npm:
+    path: "{{ app_path }}"
+  become: true
+
+- name: Build front-end assets
+  ansible.builtin.command: npm run build
+  args:
+    chdir: "{{ app_path }}"
+  become: true
+
+- name: Run database migrations
+  ansible.builtin.command: php artisan migrate --force
+  args:
+    chdir: "{{ app_path }}"
+  become: true
+

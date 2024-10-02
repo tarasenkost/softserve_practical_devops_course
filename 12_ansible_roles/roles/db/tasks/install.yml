@@ -1,0 +1,25 @@
+- name: Update package manager
+  ansible.builtin.apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Ensure PostgreSQL Python libraries are installed.
+  ansible.builtin.apt:
+    name: "{{ postgresql_python_library }}"
+    state: present
+  become: true
+
+- name: Ensure PostgreSQL packages are installed.
+  ansible.builtin.apt:
+    name: "{{ postgresql_packages }}"
+    state: present
+  become: true
+
+- name: Ensure PostgreSQL service is started and enabled.
+  ansible.builtin.service:
+    name: "{{ postgresql_daemon }}"
+    state: started
+    enabled: yes
+  become: true

@@ -1,0 +1,186 @@
+---
+
+- name: Check SSH connection
+  hosts: aws_ec2
+  gather_facts: false
+  tasks:
+    - name: Ensure SSH port is open on all hosts
+      ansible.builtin.wait_for:
+        port: 22
+        delay: 10
+        timeout: 50
+        search_regex: OpenSSH
+        host: "{{ (ansible_ssh_host | default(ansible_host)) | default(inventory_hostname) }}"
+      retries: 5 
+      delay: 20  
+      vars:
+        ansible_connection: ssh
+        ansible_python_interpreter: /usr/bin/python3.10
+
+- name: Install and configure MariaDB
+  hosts: db_terraform
+  become: yes
+  vars_files:
+  - project_vars.yml
+  roles:
+    - mariadb
+
+- name: Install and configure Apache server with application
+  hosts: server_terraform
+  become: yes
+  vars_files:
+  - project_vars.yml
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Apache, PHP, and required modules
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - php8.1
+          - php8.1-mysql
+          - php8.1-xml
+          - php8.1-mbstring
+          - php8.1-curl
+          - php8.1-zip
+        state: present
+
+    - name: Install Composer
+      ansible.builtin.shell: |
+        php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+        php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+        php -r "unlink('composer-setup.php');"
+      args:
+        creates: /usr/local/bin/composer
+
+    - name: Install Node.js and npm
+      ansible.builtin.apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+
+    - name: Set Node.js version to 16
+      ansible.builtin.shell: |
+        npm install -g n
+        n 16
+
+    - name: Clone application repository
+      ansible.builtin.git:
+        repo: "https://github.com/Practical-DevOps/app-for-devops.git"
+        dest: /var/www/html/your-app
+        version: main
+
+    - name: Configure database connection
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=Laravel
+          APP_ENV=local
+          APP_KEY=
+          APP_DEBUG=true
+          APP_URL=http://localhost
+
+          LOG_CHANNEL=stack
+          LOG_DEPRECATIONS_CHANNEL=null
+          LOG_LEVEL=debug
+
+          DB_CONNECTION=mysql
+          DB_HOST={{ db_host }}
+          DB_PORT=3306
+          DB_DATABASE={{ db_name }}
+          DB_USERNAME={{ db_user }}
+          DB_PASSWORD={{ db_pass }}
+
+          BROADCAST_DRIVER=log
+          CACHE_DRIVER=file
+          FILESYSTEM_DISK=local
+          QUEUE_CONNECTION=sync
+          SESSION_DRIVER=file
+          SESSION_LIFETIME=120
+        dest: /var/www/html/your-app/.env
+        owner: www-data
+        group: www-data
+        mode: '0775'
+
+    - name: Install Composer dependencies
+      community.general.composer:
+        command: install
+        arguments: '--ignore-platform-req=ext-curl'
+        working_dir: /var/www/html/your-app
+      environment:
+        COMPOSER_NO_INTERACTION: "1"
+        COMPOSER_ALLOW_SUPERUSER: "1"
+
+    - name: Generate application key
+      ansible.builtin.shell: php artisan key:generate
+      args:
+        chdir: /var/www/html/your-app
+
+    - name: Run database migrations
+      ansible.builtin.shell: php artisan migrate --force
+      args:
+        chdir: /var/www/html/your-app
+
+    - name: Install npm dependencies
+      npm:
+        path: /var/www/html/your-app
+
+    - name: Build frontend assets
+      ansible.builtin.shell: npm run build
+      args:
+        chdir: /var/www/html/your-app
+
+    - name: Set correct permissions
+      ansible.builtin.file:
+        path: /var/www/html/your-app
+        owner: www-data
+        group: www-data
+        mode: '0775'
+        recurse: yes
+
+    - name: Configure Apache virtual host
+      ansible.builtin.copy:
+        content: |
+          <VirtualHost *:80>
+              ServerAdmin localhost
+              DocumentRoot /var/www/html/your-app/public
+
+              <Directory /var/www/html/your-app>
+                  Options Indexes FollowSymLinks
+                  AllowOverride All
+                  Require all granted
+              </Directory>
+
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>
+        dest: /etc/apache2/sites-available/your-app.conf
+        owner: www-data
+        group: www-data
+        mode: '0775'
+      notify:
+        - Reload Apache
+
+    - name: Enable Apache virtual host
+      ansible.builtin.command: a2ensite your-app.conf
+      notify:
+        - Reload Apache
+
+    - name: Disable default site (optional)
+      ansible.builtin.command: a2dissite 000-default.conf
+      ignore_errors: yes
+      notify: Reload Apache
+
+    - name: Enable Apache rewrite module
+      community.general.apache2_module:
+        name: rewrite
+        state: present
+      notify: Reload Apache
+
+  handlers:
+    - name: Reload Apache
+      ansible.builtin.service:
+        name: apache2
+        state: reloaded

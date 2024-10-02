@@ -1,0 +1,5 @@
+log this event
+log another event
+this is not a log line
+log last event
+log another line
