@@ -1,0 +1,91 @@
+ec2_ami = "ami-0e6a13e7a5b66ff4d"
+ec2_public_ip = "18.157.169.213"
+ec2_type = "t2.micro"
+security_group_ids = {
+  "arn" = "arn:aws:ec2:eu-central-1:381492308574:security-group/sg-043f318607041e026"
+  "description" = "Managed by Terraform"
+  "egress" = toset([
+    {
+      "cidr_blocks" = tolist([
+        "0.0.0.0/0",
+      ])
+      "description" = ""
+      "from_port" = 0
+      "ipv6_cidr_blocks" = tolist([])
+      "prefix_list_ids" = tolist([])
+      "protocol" = "-1"
+      "security_groups" = toset([])
+      "self" = false
+      "to_port" = 0
+    },
+  ])
+  "id" = "sg-043f318607041e026"
+  "ingress" = toset([
+    {
+      "cidr_blocks" = tolist([
+        "0.0.0.0/0",
+      ])
+      "description" = ""
+      "from_port" = 22
+      "ipv6_cidr_blocks" = tolist([])
+      "prefix_list_ids" = tolist([])
+      "protocol" = "tcp"
+      "security_groups" = toset([])
+      "self" = false
+      "to_port" = 22
+    },
+    {
+      "cidr_blocks" = tolist([
+        "0.0.0.0/0",
+      ])
+      "description" = ""
+      "from_port" = 443
+      "ipv6_cidr_blocks" = tolist([])
+      "prefix_list_ids" = tolist([])
+      "protocol" = "tcp"
+      "security_groups" = toset([])
+      "self" = false
+      "to_port" = 443
+    },
+    {
+      "cidr_blocks" = tolist([
+        "0.0.0.0/0",
+      ])
+      "description" = ""
+      "from_port" = 8080
+      "ipv6_cidr_blocks" = tolist([])
+      "prefix_list_ids" = tolist([])
+      "protocol" = "tcp"
+      "security_groups" = toset([])
+      "self" = false
+      "to_port" = 8080
+    },
+    {
+      "cidr_blocks" = tolist([
+        "0.0.0.0/0",
+      ])
+      "description" = ""
+      "from_port" = 80
+      "ipv6_cidr_blocks" = tolist([])
+      "prefix_list_ids" = tolist([])
+      "protocol" = "tcp"
+      "security_groups" = toset([])
+      "self" = false
+      "to_port" = 80
+    },
+  ])
+  "name" = "Security Group for EC2 instances public subnets"
+  "name_prefix" = ""
+  "owner_id" = "381492308574"
+  "revoke_rules_on_delete" = false
+  "tags" = tomap({
+    "Name" = "dev-publicsubnetEC2-SG"
+  })
+  "tags_all" = tomap({
+    "Name" = "dev-publicsubnetEC2-SG"
+  })
+  "timeouts" = null /* object */
+  "vpc_id" = "vpc-0a6c3f40e15f62457"
+}
+subnet_id = "subnet-0172026dc2e0ddfa4"
+vpc_id = "vpc-0a6c3f40e15f62457"
