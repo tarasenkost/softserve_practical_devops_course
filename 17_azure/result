@@ -1,0 +1,20 @@
+azure_os_disk_name = tolist([
+  {
+    "caching" = "ReadWrite"
+    "diff_disk_settings" = tolist([])
+    "disk_encryption_set_id" = ""
+    "disk_size_gb" = 30
+    "name" = "webserver_disk1_4f9062facc5d4901946248bf7aa6a404"
+    "storage_account_type" = "Standard_LRS"
+    "write_accelerator_enabled" = false
+  },
+])
+azure_vm_location = "westus2"
+azure_vm_name = "webserver"
+public_ip_address = "4.154.98.164"
+resource_group_name = "rg-terraform"
+tls_public_key = <<EOT
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2y3Hs8RP17/nADUIHRsvnDSGocJ2kKYneyxUr4nNrTZjhwxEl+jvSPVntzwXKXITivYoPIvMuOe70GMZLJn61rjPgK/qoSk3addE16qwCiBaGCdc3Nt6xBT97syXOxIgwn5aZNMIFdm2wwWetpYALX4BiuJ0tiUaWBijKlTH7XYvaaIL0VCB5UgEdwiKY1RIo6UYrKxE7S9My1AmrOhG8N7tAkdDzP+xUxtmqEHWxikLMJfQ330600yxmfIV/ND7xwNY2vs4aRzM+TXwVp57RYFMwFwAjk3ORMxOh97VVSPsTAFMEWLlBnkrxCPXnszcuie2yk9AlAt1FkA06B/yUFMg/0GxnbiAqPVKX9Gpts/LEcetBXMGRL4qB37Msxfe1FK52eAsjJIbdNt/tjlEJEvCDekLumwBMKrB09YDOtwd3Y3GCAoWtoK5sDsaEujGrenXEjkxln7W7Z4CJDOyeDzYesj+84rA3bIJdCfqj6MSD/YUA4mfSl8zs0vGAsF5Daa+BwY0NUZ1YJ88VKFFEWUaYvTVOFu+L3tVy36mVmRxkVmWTMjzSk1P91fL1mb6ODYLrw276Gju+9dxeJssezZQfL2Ns9ujPO78xRAr0Op/TmOmvV6Bl3BYEQD+xtb19KEF2HTo1Pm2/IOgkFHSuuCIDJUxqRnuc5SGkMKrHGQ==
+
+EOT
+vm_size = "Standard_B1s"
